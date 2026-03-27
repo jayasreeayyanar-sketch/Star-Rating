@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Image Star Rating System</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: #f0f2f5;
+margin: 0;
+padding: 20px;
+color: #2c3e50;
+}
+.container {
+max-width: 1000px;
+margin: auto;
+background: white;
+padding: 40px;
+border-radius: 15px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+h1, h2 {
+text-align: center;
+margin: 0 0 10px;
+}
+p.description {
+text-align: center;
+color: #7f8c8d;
+}
+.image-gallery {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 25px;
+margin-top: 30px;
+}
+.image-card {
+border: 1px solid #eee;
+padding: 20px;
+border-radius: 12px;
+text-align: center;
+transition: all 0.3s ease;
+background: #fff;
+}
+.image-card:hover {
+transform: translateY(-8px);
+box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+.image-card img {
+width: 100%;
+height: 200px;
+object-fit: cover;
+border-radius: 8px;
+margin-bottom: 15px;
+}
+.image-card h3 {
+margin: 10px 0 5px;
+font-weight: 600;
+}
+.stars {
+margin: 15px 0;
+font-size: 28px;
+color: #dfe6e9;
+cursor: pointer;
+}
+.stars i.active,
+.stars i.hover {
+color: #f1c40f;
+}
+#rating-summary {
+margin-top: 50px;
+padding: 25px;
+border-top: 3px solid #f1c40f;
+background: #fdfdfd;
+border-radius: 0 0 12px 12px;
+}
+#rating-summary h2 {
+margin-bottom: 20px;
+}
+.detail-item {
+background: #fff;
+padding: 15px;
+margin-bottom: 12px;
+border-left: 6px solid #f1c40f;
+box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 16px;
+border-radius: 6px;
+}
+.status-text {
+font-weight: bold;
+color: #27ae60;
+}
+@media (max-width: 400px) {
+.stars {
+font-size: 22px;
+}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Visual Explorer</h1>
+<p class="description">Explore the gallery and cast your vote on each image.</p>
+<div class="image-gallery">
+<div class="image-card" data-id="1" data-name="Mountain Peaks">
+<img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Mountain Peaks" />
+<h3>Mountain Peaks</h3>
+<div class="stars" aria-label="Rate Mountain Peaks">
+<i class="fa-solid fa-star" data-value="1" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="2" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="3" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="4" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="5" tabindex="0"></i>
+</div>
+<p>User Rating: <span class="status-text">Unrated</span></p>
+</div>
+<div class="image-card" data-id="2" data-name="Azure Ocean">
+<img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Azure Ocean" />
+<h3>Azure Ocean</h3>
+<div class="stars" aria-label="Rate Azure Ocean">
+<i class="fa-solid fa-star" data-value="1" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="2" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="3" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="4" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="5" tabindex="0"></i>
+</div>
+<p>User Rating: <span class="status-text">Unrated</span></p>
+</div>
+<div class="image-card" data-id="3" data-name="City Lights">
+<img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=800&q=80" alt="City Lights" />
+<h3>City Lights</h3>
+<div class="stars" aria-label="Rate City Lights">
+<i class="fa-solid fa-star" data-value="1" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="2" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="3" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="4" tabindex="0"></i>
+<i class="fa-solid fa-star" data-value="5" tabindex="0"></i>
+</div>
+<p>User Rating: <span class="status-text">Unrated</span></p>
+</div>
+</div>
+<div id="rating-summary">
+<h2>Your Activity Log</h2>
+<div id="details-list">
+<p style="text-align: center; color: #bdc3c7;">Start rating images to see your summary here.</p>
+</div>
+</div>
+</div>
+<script>
+$(document).ready(function() {
+const ratingsDatabase = {};
+$('.stars i').on('mouseenter focus', function() {
+const val = $(this).data('value');
+$(this).siblings().removeClass('hover');
+$(this).addClass('hover');
+$(this).prevAll().addClass('hover');
+$(this).nextAll().removeClass('hover');
+});
+$('.stars').on('mouseleave', function() {
+$(this).find('i').removeClass('hover');
+});
+$('.stars i').on('blur', function() {
+$(this).parent().find('i').removeClass('hover');
+});
+$('.stars i').on('click keypress', function(e) {
+if(e.type === 'click' || (e.type === 'keypress' && (e.key === 'Enter' || e.key === ' '))){
+const rating = $(this).data('value');
+const card = $(this).closest('.image-card');
+const itemId = card.data('id');
+const itemName = card.data('name');
+$(this).siblings().removeClass('active');
+$(this).prevAll().addBack().addClass('active');
+card.find('.status-text').text(rating + ' / 5 Stars').addClass('status-text');
+ratingsDatabase[itemId] = {
+name: itemName,
+score: rating,
+time: new Date().toLocaleTimeString()
+};
+renderSummary();
+}
+});
+function renderSummary() {
+const list = $('#details-list');
+list.empty();
+if (Object.keys(ratingsDatabase).length === 0) {
+list.html('<p style="text-align: center; color: #bdc3c7;">Start rating images to see your summary here.</p>');
+return;
+}
+$.each(ratingsDatabase, function(id, data) {
+list.append(`
+<div class="detail-item">
+<span><strong>${data.name}</strong></span>
+<span>Rated <b>${data.score} Stars</b> at ${data.time}</span>
+</div>
+`);
+});
+}
+});
+</script>
+</body>
+</html>
